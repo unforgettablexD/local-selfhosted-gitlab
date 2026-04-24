@@ -120,7 +120,9 @@ docker_push:
 # Deploy staging release to local Kubernetes context via Helm.
 deploy_staging:
   stage: deploy_staging
-  image: alpine/helm:3.16.4
+  image:
+    name: alpine/helm:3.16.4
+    entrypoint: [""]
   script:
     - mkdir -p ~/.kube
     - echo "$KUBECONFIG_B64" | base64 -d > ~/.kube/config
@@ -137,7 +139,9 @@ deploy_staging:
 # Deploy production release with manual approval to enforce release control.
 deploy_prod:
   stage: deploy_prod
-  image: alpine/helm:3.16.4
+  image:
+    name: alpine/helm:3.16.4
+    entrypoint: [""]
   when: manual
   allow_failure: false
   script:
