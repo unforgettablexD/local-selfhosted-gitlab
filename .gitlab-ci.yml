@@ -100,11 +100,6 @@ docker_build:
     - docker:27-dind
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" app/backend
-    - docker save "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" -o backend-image.tar
-  artifacts:
-    paths:
-      - backend-image.tar
-    expire_in: 1 day
 
 # Push container image to configured registry when registry credentials exist.
 docker_push:
@@ -112,11 +107,10 @@ docker_push:
   image: docker:27
   services:
     - docker:27-dind
-  needs: ["docker_build"]
   script:
-    - docker load -i backend-image.tar
     - |
       if [ -n "${CI_REGISTRY_USER:-}" ] && [ -n "${CI_REGISTRY_PASSWORD:-}" ] && [ -n "${CI_REGISTRY:-}" ]; then
+        docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" app/backend
         echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
         docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
       else
