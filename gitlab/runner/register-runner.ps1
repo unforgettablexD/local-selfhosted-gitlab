@@ -2,6 +2,7 @@ Param()
 $ErrorActionPreference = "Stop"
 
 $gitlabUrl = if ($env:GITLAB_URL) { $env:GITLAB_URL } else { "http://gitlab:8929" }
+$cloneUrl = if ($env:RUNNER_CLONE_URL) { $env:RUNNER_CLONE_URL } else { "http://host.docker.internal:8929" }
 $runnerName = if ($env:RUNNER_NAME) { $env:RUNNER_NAME } else { "local-docker-runner" }
 $registrationToken = $env:REGISTRATION_TOKEN
 
@@ -16,6 +17,7 @@ docker exec local-gitlab-runner gitlab-runner register `
   --non-interactive `
   --url $gitlabUrl `
   $tokenArg $registrationToken `
+  --clone-url $cloneUrl `
   --executor docker `
   --docker-image "python:3.11" `
   --description $runnerName `
