@@ -30,7 +30,7 @@ backend_pytest:
   image: python:3.11
   script:
     - pip install -r app/backend/requirements.txt
-    - cd app/backend && pytest -q
+    - PYTHONPATH=app/backend pytest -q app/backend/tests
 
 # Execute frontend smoke tests (node built-in test runner).
 frontend_npm_test:
