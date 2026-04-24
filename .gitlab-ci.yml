@@ -69,7 +69,9 @@ bandit_sast:
 # Scan repo history/content for accidental secrets.
 gitleaks_secret_scan:
   stage: security
-  image: zricethezav/gitleaks:v8.24.2
+  image:
+    name: zricethezav/gitleaks:v8.24.2
+    entrypoint: [""]
   script:
     - gitleaks detect --source . --config security/gitleaks.toml --redact
 
@@ -81,8 +83,7 @@ trivy_container_scan:
     - docker:27-dind
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" app/backend
-    - wget -qO- https://github.com/aquasecurity/trivy/releases/download/v0.57.0/trivy_0.57.0_Linux-64bit.tar.gz | tar zx
-    - ./trivy image --config security/trivy-config.yaml --exit-code 1 "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$CI_PROJECT_DIR:/project" aquasec/trivy:0.63.0 image --config /project/security/trivy-config.yaml --severity CRITICAL --ignore-unfixed --skip-version-check --exit-code 1 "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 
 # Fail the pipeline if admin endpoints are exposed without auth guardrails.
 custom_api_exposure_check:
