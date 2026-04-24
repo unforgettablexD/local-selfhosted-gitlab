@@ -6,6 +6,7 @@ services:
     hostname: localhost
     ports:
       - "8080:8929"
+      - "8929:8929"
       - "2222:22"
     environment:
       GITLAB_OMNIBUS_CONFIG: |

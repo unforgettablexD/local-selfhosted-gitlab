@@ -19,6 +19,7 @@ node_modules/
 
 # Docker data mounts
 gitlab/data/
+gitlab/runner/config/
 observability/grafana/data/
 
 # Generated artifacts
