@@ -1,0 +1,16 @@
+concurrent = 2
+check_interval = 0
+
+[[runners]]
+  name = "local-docker-runner"
+  url = "http://gitlab/"
+  token = "REPLACE_WITH_REGISTRATION_TOKEN"
+  executor = "docker"
+  [runners.docker]
+    tls_verify = false
+    image = "python:3.11"
+    privileged = true
+    disable_cache = false
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
+  [runners.cache]
+    MaxUploadedArchiveSize = 0

@@ -1,0 +1,13 @@
+title = "Local DevSecOps Gitleaks Config"
+
+[allowlist]
+description = "Allow fake demo secrets used for local examples"
+paths = [
+  '''k8s/secret\.example\.yaml''',
+  '''helm/backend/values\.yaml'''
+]
+regexes = [
+  '''demo-valid-signature''',
+  '''fake-token''',
+  '''replace-with-fake-token'''
+]

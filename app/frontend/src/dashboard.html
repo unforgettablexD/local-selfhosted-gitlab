@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DevSecOps Lab Status</title>
+    <style>
+      :root {
+        --bg: #08111f;
+        --card: #12233a;
+        --ok: #22c55e;
+        --bad: #ef4444;
+        --text: #dbeafe;
+        --muted: #93c5fd;
+      }
+      body { margin: 0; padding: 24px; font-family: Segoe UI, sans-serif; background: radial-gradient(circle at top, #173661, var(--bg)); color: var(--text); }
+      h1 { margin: 0 0 8px; }
+      p { margin: 0 0 24px; color: var(--muted); }
+      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+      .card { background: var(--card); border-radius: 12px; padding: 14px; border: 1px solid #274b77; }
+      .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+      .status-ok { color: var(--ok); }
+      .status-bad { color: var(--bad); }
+      a { color: #bfdbfe; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      button { margin-top: 18px; padding: 10px 14px; border-radius: 8px; border: 1px solid #274b77; background: #1e3a5f; color: var(--text); cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <h1>Self-hosted DevSecOps Lab Status</h1>
+    <p id="banner">Loading...</p>
+    <div class="grid" id="cards"></div>
+    <button id="refresh">Refresh Checks</button>
+    <button id="openAll">Open Core URLs</button>
+    <script>
+      async function loadChecks() {
+        const response = await fetch("/api/checks");
+        const data = await response.json();
+        document.getElementById("banner").textContent = data.banner;
+        const cards = document.getElementById("cards");
+        cards.innerHTML = "";
+        for (const check of data.checks) {
+          const statusClass = check.ok ? "status-ok" : "status-bad";
+          const statusText = check.ok ? "healthy" : "unhealthy";
+          cards.innerHTML += `
+            <div class="card">
+              <div class="row">
+                <strong>${check.label}</strong>
+                <span class="${statusClass}">${statusText} (${check.status})</span>
+              </div>
+              <a href="${check.url}" target="_blank" rel="noreferrer">Open ${check.label}</a>
+            </div>
+          `;
+        }
+      }
+      document.getElementById("refresh").addEventListener("click", loadChecks);
+      document.getElementById("openAll").addEventListener("click", async () => {
+        const response = await fetch("/api/checks");
+        const data = await response.json();
+        for (const check of data.checks) {
+          window.open(check.url, "_blank", "noopener,noreferrer");
+        }
+      });
+      loadChecks();
+      setInterval(loadChecks, 10000);
+    </script>
+  </body>
+</html>

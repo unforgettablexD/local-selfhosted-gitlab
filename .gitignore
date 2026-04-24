@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+
+# Node
+node_modules/
+
+# Terraform/Pulumi
+.terraform/
+*.tfstate*
+.pulumi/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Docker data mounts
+gitlab/data/
+observability/grafana/data/
+
+# Generated artifacts
+infra/terraform/local/generated/
+*.tar

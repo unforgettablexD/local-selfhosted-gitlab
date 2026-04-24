@@ -1,0 +1,38 @@
+replicaCount: 2
+
+image:
+  repository: platform-backend
+  tag: local
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  host: backend.local.dev
+  path: /
+
+env:
+  APP_ENV: dev
+  LOG_LEVEL: INFO
+
+secretEnv:
+  WEBHOOK_SIGNATURE: demo-valid-signature
+  API_TOKEN: fake-token
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70

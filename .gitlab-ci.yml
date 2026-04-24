@@ -1,0 +1,155 @@
+stages:
+  - lint
+  - test
+  - security
+  - build
+  - package
+  - deploy_staging
+  - deploy_prod
+
+variables:
+  # Override these in GitLab CI/CD Variables for your local environment.
+  CI_REGISTRY_IMAGE: "registry.local/devsecops/platform-backend"
+  KUBE_CONTEXT: "kind-devsecops-lab"
+  HELM_RELEASE_NAME: "platform-backend"
+  STAGING_NAMESPACE: "staging"
+  PROD_NAMESPACE: "prod"
+  DOCKER_TLS_CERTDIR: ""
+
+# Lint Python backend with Ruff.
+ruff_lint:
+  stage: lint
+  image: python:3.11
+  script:
+    - pip install -r app/backend/requirements.txt
+    - ruff check app/backend/src app/backend/tests
+
+# Execute backend unit and API tests with pytest.
+backend_pytest:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install -r app/backend/requirements.txt
+    - cd app/backend && pytest -q
+
+# Execute frontend smoke tests (node built-in test runner).
+frontend_npm_test:
+  stage: test
+  image: node:22-alpine
+  script:
+    - cd app/frontend
+    - npm ci
+    - npm test
+
+# Audit Python dependencies for known vulnerabilities.
+dependency_audit_python:
+  stage: security
+  image: python:3.11
+  script:
+    - pip install pip-audit
+    - pip-audit -r app/backend/requirements.txt
+
+# Audit Node dependencies for known vulnerabilities.
+dependency_audit_node:
+  stage: security
+  image: node:22-alpine
+  script:
+    - cd app/frontend
+    - npm ci
+    - npm audit --audit-level=high
+
+# Run Bandit static application security testing for Python code.
+bandit_sast:
+  stage: security
+  image: python:3.11
+  script:
+    - pip install bandit
+    - bandit -c security/bandit.yaml -r app/backend/src
+
+# Scan repo history/content for accidental secrets.
+gitleaks_secret_scan:
+  stage: security
+  image: zricethezav/gitleaks:v8.24.2
+  script:
+    - gitleaks detect --source . --config security/gitleaks.toml --redact
+
+# Build image and run Trivy vulnerability/secret scan against container image.
+trivy_container_scan:
+  stage: security
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" app/backend
+    - wget -qO- https://github.com/aquasecurity/trivy/releases/download/v0.57.0/trivy_0.57.0_Linux-64bit.tar.gz | tar zx
+    - ./trivy image --config security/trivy-config.yaml --exit-code 1 "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+
+# Fail the pipeline if admin endpoints are exposed without auth guardrails.
+custom_api_exposure_check:
+  stage: security
+  image: python:3.11
+  script:
+    - python security/api_exposure_check.py
+
+# Build backend container image as deployable artifact.
+docker_build:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" app/backend
+    - docker save "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" -o backend-image.tar
+  artifacts:
+    paths:
+      - backend-image.tar
+    expire_in: 1 day
+
+# Push container image to configured registry when registry credentials exist.
+docker_push:
+  stage: package
+  image: docker:27
+  services:
+    - docker:27-dind
+  needs: ["docker_build"]
+  script:
+    - docker load -i backend-image.tar
+    - |
+      if [ -n "${CI_REGISTRY_USER:-}" ] && [ -n "${CI_REGISTRY_PASSWORD:-}" ] && [ -n "${CI_REGISTRY:-}" ]; then
+        echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+        docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      else
+        echo "Registry credentials not configured; skipping push for local-first lab."
+      fi
+
+# Deploy staging release to local Kubernetes context via Helm.
+deploy_staging:
+  stage: deploy_staging
+  image: alpine/helm:3.16.4
+  script:
+    - mkdir -p ~/.kube
+    - echo "$KUBECONFIG_B64" | base64 -d > ~/.kube/config
+    - helm upgrade --install "$HELM_RELEASE_NAME" helm/backend
+      --namespace "$STAGING_NAMESPACE" --create-namespace
+      -f helm/backend/values.yaml -f helm/backend/values-staging.yaml
+      --set image.repository="$CI_REGISTRY_IMAGE"
+      --set image.tag="$CI_COMMIT_SHORT_SHA"
+      --kube-context "$KUBE_CONTEXT"
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+
+# Deploy production release with manual approval to enforce release control.
+deploy_prod:
+  stage: deploy_prod
+  image: alpine/helm:3.16.4
+  when: manual
+  allow_failure: false
+  script:
+    - mkdir -p ~/.kube
+    - echo "$KUBECONFIG_B64" | base64 -d > ~/.kube/config
+    - helm upgrade --install "$HELM_RELEASE_NAME" helm/backend
+      --namespace "$PROD_NAMESPACE" --create-namespace
+      -f helm/backend/values.yaml -f helm/backend/values-prod.yaml
+      --set image.repository="$CI_REGISTRY_IMAGE"
+      --set image.tag="$CI_COMMIT_SHORT_SHA"
+      --kube-context "$KUBE_CONTEXT"

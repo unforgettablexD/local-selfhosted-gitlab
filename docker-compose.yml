@@ -1,0 +1,30 @@
+services:
+  backend:
+    image: platform-backend:local
+    build:
+      context: ./app/backend
+    container_name: platform-backend
+    environment:
+      APP_ENV: local
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: platform-redis
+    ports:
+      - "6379:6379"
+
+  celery-worker:
+    image: platform-backend:local
+    build:
+      context: ./app/backend
+    container_name: platform-celery-worker
+    command: celery -A src.worker.celery_app worker --loglevel=info
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis

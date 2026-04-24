@@ -1,0 +1,7 @@
+external_url "http://localhost:8080"
+gitlab_rails["gitlab_shell_ssh_port"] = 2222
+
+# Example hardening for production-like local testing:
+# nginx["redirect_http_to_https"] = true
+# letsencrypt["enable"] = false
+# gitlab_rails["time_zone"] = "America/Los_Angeles"

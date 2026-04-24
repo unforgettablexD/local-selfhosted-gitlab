@@ -1,0 +1,3 @@
+config:
+  self-hosted-gitlab-devsecops-platform:namespace: pulumi-managed-lab
+  self-hosted-gitlab-devsecops-platform:context: kind-devsecops-lab

@@ -1,0 +1,27 @@
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:17.11.0-ce.0
+    container_name: local-gitlab-ce
+    restart: unless-stopped
+    hostname: localhost
+    ports:
+      - "8080:8929"
+      - "2222:22"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8929'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+    volumes:
+      - ./data/config:/etc/gitlab
+      - ./data/logs:/var/log/gitlab
+      - ./data/data:/var/opt/gitlab
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine-v17.9.1
+    container_name: local-gitlab-runner
+    restart: unless-stopped
+    depends_on:
+      - gitlab
+    volumes:
+      - ./runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock

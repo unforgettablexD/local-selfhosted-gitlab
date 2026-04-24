@@ -1,0 +1,13 @@
+scan:
+  security-checks:
+    - vuln
+    - secret
+  skip-dirs:
+    - .git
+vulnerability:
+  type:
+    - os
+    - library
+  severity:
+    - HIGH
+    - CRITICAL
