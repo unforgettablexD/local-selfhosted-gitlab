@@ -3,7 +3,8 @@ check_interval = 0
 
 [[runners]]
   name = "local-docker-runner"
-  url = "http://gitlab/"
+  url = "http://gitlab:8929"
+  clone_url = "http://gitlab:8929"
   token = "REPLACE_WITH_REGISTRATION_TOKEN"
   executor = "docker"
   [runners.docker]
