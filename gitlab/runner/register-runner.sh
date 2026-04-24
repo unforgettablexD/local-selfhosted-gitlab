@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GITLAB_URL="${GITLAB_URL:-http://gitlab:8929}"
+GITLAB_URL="${GITLAB_URL:-http://host.docker.internal:8929}"
 RUNNER_CLONE_URL="${RUNNER_CLONE_URL:-http://host.docker.internal:8929}"
 RUNNER_NAME="${RUNNER_NAME:-local-docker-runner}"
 REGISTRATION_TOKEN="${REGISTRATION_TOKEN:-REPLACE_ME}"

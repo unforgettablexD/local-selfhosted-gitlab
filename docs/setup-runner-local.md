@@ -32,3 +32,4 @@ make runner-register
 - This runner mounts `/var/run/docker.sock` for Docker-in-Docker style jobs.
 - For stricter security in real production, isolate runners by trust boundary and use protected runners/tags.
 - The registration script sets `clone_url=http://host.docker.internal:8929` so job containers can clone from the host-mapped GitLab port on Docker Desktop.
+- The registration script uses `url` and `clone_url` as `http://host.docker.internal:8929` so clone, job updates, and artifact uploads all resolve correctly from runner/job containers.
