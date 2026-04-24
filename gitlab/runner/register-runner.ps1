@@ -1,7 +1,7 @@
 Param()
 $ErrorActionPreference = "Stop"
 
-$gitlabUrl = if ($env:GITLAB_URL) { $env:GITLAB_URL } else { "http://localhost:8080" }
+$gitlabUrl = if ($env:GITLAB_URL) { $env:GITLAB_URL } else { "http://gitlab:8929" }
 $runnerName = if ($env:RUNNER_NAME) { $env:RUNNER_NAME } else { "local-docker-runner" }
 $registrationToken = $env:REGISTRATION_TOKEN
 
@@ -10,10 +10,12 @@ if (-not $registrationToken) {
   exit 1
 }
 
-docker exec -it local-gitlab-runner gitlab-runner register `
+$tokenArg = if ($registrationToken.StartsWith("glrt-")) { "--token" } else { "--registration-token" }
+
+docker exec local-gitlab-runner gitlab-runner register `
   --non-interactive `
   --url $gitlabUrl `
-  --registration-token $registrationToken `
+  $tokenArg $registrationToken `
   --executor docker `
   --docker-image "python:3.11" `
   --description $runnerName `
