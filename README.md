@@ -1,4 +1,4 @@
-# self-hosted-gitlab-devsecops-platform
+# local-selfhosted-gitlab
 
 Production-style, **free/local-first** DevSecOps lab proving self-hosted platform ownership across GitLab CE, CI/CD, Kubernetes, Helm, Terraform, Pulumi, security scanning, and observability.
 
@@ -25,7 +25,7 @@ flowchart LR
   Pipeline --> Helm[Helm Deploy]
   Helm --> K8s[kind Kubernetes Cluster]
   K8s --> App[FastAPI Backend]
-  App --> Metrics[/metrics Prometheus]
+  App --> Metrics["/metrics (Prometheus scrape)"]
   Prom[Prometheus] --> Grafana[Grafana Dashboards]
   App --> Redis[(Redis)]
   App --> Worker[Celery Worker]
@@ -77,8 +77,8 @@ make runner-register
 ```
 
 Detailed instructions:
-- [docs/setup-gitlab-local.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/setup-gitlab-local.md)
-- [docs/setup-runner-local.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/setup-runner-local.md)
+- [docs/setup-gitlab-local.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/setup-gitlab-local.md)
+- [docs/setup-runner-local.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/setup-runner-local.md)
 
 ## CI/CD Pipeline
 
@@ -92,16 +92,16 @@ Stages:
 - `deploy_prod` (manual)
 
 Reference:
-- [.gitlab-ci.yml](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/.gitlab-ci.yml)
-- [docs/ci-cd-pipeline.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/ci-cd-pipeline.md)
+- [.gitlab-ci.yml](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/.gitlab-ci.yml)
+- [docs/ci-cd-pipeline.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/ci-cd-pipeline.md)
 
 ## Kubernetes + Helm
 
 Raw manifests:
-- [k8s/](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/k8s)
+- [k8s/](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/k8s)
 
 Helm chart:
-- [helm/backend/](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/helm/backend)
+- [helm/backend/](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/helm/backend)
 
 Commands:
 
@@ -115,8 +115,8 @@ make helm-deploy-staging
 
 ## Terraform and Pulumi (Local-First)
 
-- Terraform: [infra/terraform/local/README.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/infra/terraform/local/README.md)
-- Pulumi: [infra/pulumi/README.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/infra/pulumi/README.md)
+- Terraform: [infra/terraform/local/README.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/infra/terraform/local/README.md)
+- Pulumi: [infra/pulumi/README.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/infra/pulumi/README.md)
 
 ## Security Scanning
 
@@ -129,22 +129,22 @@ Included checks:
 - Custom admin endpoint exposure validation
 
 Details:
-- [docs/security-scanning.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/security-scanning.md)
+- [docs/security-scanning.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/security-scanning.md)
 
 ## Observability
 
 Prometheus scrapes backend metrics; Grafana dashboards show request rate, latency, errors, payment outcomes, quote volume, severity distribution, and health.
 
-- [docs/observability.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/observability.md)
+- [docs/observability.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/observability.md)
 
 ## Backup / Restore and Incident Ops
 
-- [docs/backup-restore-runbook.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/backup-restore-runbook.md)
-- [docs/incident-runbook.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/incident-runbook.md)
+- [docs/backup-restore-runbook.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/backup-restore-runbook.md)
+- [docs/incident-runbook.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/incident-runbook.md)
 
 ## Resume-Ready Bullets
 
-- [docs/resume-bullets.md](/C:/Users/akkil/OneDrive/Desktop/codes/zacalar/docs/resume-bullets.md)
+- [docs/resume-bullets.md](/C:/Users/akkil/OneDrive/Desktop/codes/local-selfhosted-gitlab/docs/resume-bullets.md)
 
 ## Public Safety Notes
 
@@ -152,3 +152,5 @@ Prometheus scrapes backend metrics; Grafana dashboards show request rate, latenc
 - `secret.example.yaml` contains fake placeholders only.
 - Payment flow is mocked; no Stripe keys, no external payment processing.
 - Demo data is in-memory and synthetic.
+
+
