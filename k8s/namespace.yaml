@@ -3,4 +3,5 @@ kind: Namespace
 metadata:
   name: devsecops-lab
   labels:
-    app.kubernetes.io/part-of: self-hosted-gitlab-devsecops-platform
+    app.kubernetes.io/part-of: local-selfhosted-gitlab
+

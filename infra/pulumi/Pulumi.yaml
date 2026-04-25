@@ -1,4 +1,5 @@
-name: self-hosted-gitlab-devsecops-platform
+name: local-selfhosted-gitlab
 runtime:
   name: python
 description: Pulumi local Kubernetes demo for DevSecOps platform
+

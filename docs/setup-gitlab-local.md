@@ -20,12 +20,12 @@ Use `root` and the printed password to log in.
 ## Create a GitLab Project
 
 1. Sign in to `http://localhost:8080`.
-2. Create a new blank project named `self-hosted-gitlab-devsecops-platform`.
+2. Create a new blank project named `local-selfhosted-gitlab`.
 3. Add your repository remote and push:
 
 ```bash
 git init
-git remote add origin http://localhost:8080/root/self-hosted-gitlab-devsecops-platform.git
+git remote add origin http://localhost:8080/root/local-selfhosted-gitlab.git
 git add .
 git commit -m "Initial DevSecOps lab"
 git push -u origin main
@@ -52,3 +52,4 @@ Use GitLab project `Settings` -> `Repository` -> `Mirroring repositories` to mir
 
 - Push a commit or open a merge request.
 - Visit `CI/CD` -> `Pipelines`.
+

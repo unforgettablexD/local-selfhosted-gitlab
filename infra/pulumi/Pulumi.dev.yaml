@@ -1,3 +1,4 @@
 config:
-  self-hosted-gitlab-devsecops-platform:namespace: pulumi-managed-lab
-  self-hosted-gitlab-devsecops-platform:context: kind-devsecops-lab
+  local-selfhosted-gitlab:namespace: pulumi-managed-lab
+  local-selfhosted-gitlab:context: kind-devsecops-lab
+

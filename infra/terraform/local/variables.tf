@@ -1,7 +1,7 @@
 variable "project_name" {
   type        = string
   description = "Project identifier."
-  default     = "self-hosted-gitlab-devsecops-platform"
+  default     = "local-selfhosted-gitlab"
 }
 
 variable "kubeconfig_path" {
@@ -27,3 +27,4 @@ variable "enable_kubernetes_resources" {
   description = "Toggle for local Kubernetes resources."
   default     = false
 }
+
