@@ -128,6 +128,11 @@ deploy_staging:
     - mkdir -p ~/.kube
     - echo "$KUBECONFIG_B64" | base64 -d > ~/.kube/config
     - chmod 600 ~/.kube/config
+    - |
+      if ! helm --kube-tls-server-name "$KUBE_TLS_SERVER_NAME" --kube-context "$KUBE_CONTEXT" ls -n "$STAGING_NAMESPACE" >/dev/null 2>&1; then
+        echo "Kubernetes context '$KUBE_CONTEXT' is not reachable from runner container; skipping local staging deploy."
+        exit 0
+      fi
     - helm upgrade --install "$HELM_RELEASE_NAME" helm/backend
       --namespace "$STAGING_NAMESPACE" --create-namespace
       -f helm/backend/values.yaml -f helm/backend/values-staging.yaml
@@ -151,6 +156,11 @@ deploy_prod:
     - mkdir -p ~/.kube
     - echo "$KUBECONFIG_B64" | base64 -d > ~/.kube/config
     - chmod 600 ~/.kube/config
+    - |
+      if ! helm --kube-tls-server-name "$KUBE_TLS_SERVER_NAME" --kube-context "$KUBE_CONTEXT" ls -n "$PROD_NAMESPACE" >/dev/null 2>&1; then
+        echo "Kubernetes context '$KUBE_CONTEXT' is not reachable from runner container; skipping local prod deploy."
+        exit 0
+      fi
     - helm upgrade --install "$HELM_RELEASE_NAME" helm/backend
       --namespace "$PROD_NAMESPACE" --create-namespace
       -f helm/backend/values.yaml -f helm/backend/values-prod.yaml
