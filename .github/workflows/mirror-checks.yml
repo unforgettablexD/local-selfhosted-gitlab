@@ -17,7 +17,7 @@ jobs:
       - name: Ruff
         run: ruff check app/backend/src app/backend/tests
       - name: Pytest
-        run: cd app/backend && pytest -q
+        run: PYTHONPATH=app/backend pytest -q app/backend/tests
 
   frontend:
     runs-on: ubuntu-latest
